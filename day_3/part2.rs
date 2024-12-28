@@ -130,3 +130,9 @@ fn test1() {
     let test_str = ["xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"];
     assert_eq!(part2(test_str.as_slice()), 48);
 }
+
+#[test]
+fn test2() {
+    let test_str = ["xmul(2,4)&do()mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)un?mul(8,5))"];
+    assert_eq!(part2(test_str.as_slice()), 29);
+}
