@@ -7,5 +7,5 @@ fn main() {
         .collect::<Vec<&str>>();
 
     println!("Part 1- {}", part1::part1(input.as_slice()));
-    // println!("Part 2- {}", part2::part2(input.as_slice()));
+    println!("Part 2- {}", part2::part2(input.as_slice()));
 }
