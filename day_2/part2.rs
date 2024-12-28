@@ -22,14 +22,35 @@ fn safe_to_val(nums: &[i32]) -> i32 {
 }
 
 fn is_safe(nums: &[i32]) -> bool {
-    let inc = all_inc(nums);
-    let dec = all_dec(nums);
+    let nums_list = gen_all_perms(nums);
+
+    for nums in nums_list.iter() {
+        let nums = nums.as_slice();
+
+        if (all_inc(nums) || all_dec(nums)) && level_diff(nums) {
+            return true;
+        }
+    }
 
     false
 }
 
+fn gen_all_perms(nums: &[i32]) -> Vec<Vec<i32>> {
+    let mut nums_list: Vec<Vec<i32>> = Vec::new();
+    nums_list.push(nums.to_vec());
+
+    for i in 0..nums.len() {
+        let mut nums = nums.to_vec();
+        nums.remove(i);
+
+        nums_list.push(nums);
+    }
+
+    nums_list
+}
+
 fn all_inc(nums: &[i32]) -> bool {
-    for (i, window) in nums.windows(2).enumerate() {
+    for window in nums.windows(2) {
         if window[0] < window[1] {
             return false;
         }
@@ -39,7 +60,7 @@ fn all_inc(nums: &[i32]) -> bool {
 }
 
 fn all_dec(nums: &[i32]) -> bool {
-    for (i, window) in nums.windows(2).enumerate() {
+    for window in nums.windows(2) {
         if window[0] > window[1] {
             return false;
         }
@@ -48,7 +69,7 @@ fn all_dec(nums: &[i32]) -> bool {
     true
 }
 
-fn check_level_diff(nums: &[i32]) -> bool {
+fn level_diff(nums: &[i32]) -> bool {
     for window in nums.windows(2) {
         let diff = (window[0] - window[1]).abs();
 
@@ -79,4 +100,10 @@ fn part2_test() {
 
     let nums6 = vec![1, 3, 6, 7, 9];
     assert!(is_safe(nums6.as_slice()));
+
+    let nums7 = vec![6, 7, 9, 11, 13, 14, 18];
+    assert!(is_safe(nums7.as_slice()));
+
+    let nums8 = vec![6, 4, 7, 8];
+    assert!(is_safe(nums8.as_slice()));
 }
