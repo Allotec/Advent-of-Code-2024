@@ -1,6 +1,6 @@
 use regex::Regex;
 
-#[derive(Clone, Copy)]
+#[derive(Clone, Copy, Debug)]
 enum Matches {
     DoM(usize),
     DontM(usize),
@@ -52,9 +52,12 @@ fn gen_valid_ranges(hay: &str) -> Vec<(usize, usize)> {
         .map(|s| s.start())
         .collect::<Vec<usize>>();
 
+    let mut ranges = Vec::<(usize, usize)>::new();
+    if !dont_matches.is_empty() {
+        ranges.push((0, dont_matches[0]));
+    }
     let merged_matches = merge_matches(do_matches, dont_matches);
 
-    let mut ranges = Vec::<(usize, usize)>::new();
     let mut last_val: Option<Matches> = None;
 
     for matched_val in merged_matches.iter() {
@@ -74,13 +77,17 @@ fn gen_valid_ranges(hay: &str) -> Vec<(usize, usize)> {
         }
     }
 
+    if let Matches::DoM(val) = merged_matches.last().unwrap() {
+        ranges.push((*val, hay.len()));
+    }
+
     ranges
 }
 
 fn merge_matches(mut do_matches: Vec<usize>, mut dont_matches: Vec<usize>) -> Vec<Matches> {
     let mut merged_matches = Vec::<Matches>::new();
 
-    while do_matches.len() > 0 && dont_matches.len() > 0 {
+    while !do_matches.is_empty() && !dont_matches.is_empty() {
         let do_val = do_matches.first().unwrap();
         let dont_val = dont_matches.first().unwrap();
 
@@ -93,13 +100,13 @@ fn merge_matches(mut do_matches: Vec<usize>, mut dont_matches: Vec<usize>) -> Ve
         }
     }
 
-    while do_matches.len() > 0 {
+    while !do_matches.is_empty() {
         let do_val = do_matches.first().unwrap();
         merged_matches.push(Matches::DoM(*do_val));
         do_matches.remove(0);
     }
 
-    while dont_matches.len() > 0 {
+    while !dont_matches.is_empty() {
         let do_val = dont_matches.first().unwrap();
         merged_matches.push(Matches::DontM(*do_val));
         dont_matches.remove(0);
@@ -116,4 +123,10 @@ fn concat_input(input: &[&str]) -> String {
     });
 
     concated
+}
+
+#[test]
+fn test1() {
+    let test_str = ["xmul(2,4)&mul[3,7]!^don't()_mul(5,5)+mul(32,64](mul(11,8)undo()?mul(8,5))"];
+    assert_eq!(part2(test_str.as_slice()), 48);
 }
